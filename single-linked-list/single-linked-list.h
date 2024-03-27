@@ -135,6 +135,8 @@ class SingleLinkedList {
         // Возвращает ссылку на самого себя
         // Инкремент итератора, не указывающего на существующий элемент списка, приводит к неопределённому поведению
         BasicIterator& operator++() noexcept {
+            //проверка, что адрес ненулевой, чтоб отлавливать выходы за пределы списка
+            assert(this->node_ != nullptr);
             *this = BasicIterator(this->node_->next_node); // сдвигаем
             return *this;
         }
@@ -144,6 +146,8 @@ class SingleLinkedList {
         // Инкремент итератора, не указывающего на существующий элемент списка,
         // приводит к неопределённому поведению
         BasicIterator operator++(int) noexcept {
+            //проверка, что адрес ненулевой, чтоб отлавливать выходы за пределы списка
+            assert(this->node_ != nullptr);  
             BasicIterator old_iterator(*this);
             *this = BasicIterator(this->node_->next_node); // сдвигаем
             return old_iterator;
@@ -153,6 +157,8 @@ class SingleLinkedList {
         // Вызов этого оператора у итератора, не указывающего на существующий элемент списка,
         // приводит к неопределённому поведению
         [[nodiscard]] reference operator*() const noexcept {
+            //проверка, что адрес ненулевой, чтоб отлавливать выходы за пределы списка
+            assert(this->node_ != nullptr);  
             return (this->node_->value);
         }
 
@@ -160,6 +166,8 @@ class SingleLinkedList {
         // Вызов этого оператора у итератора, не указывающего на существующий элемент списка,
         // приводит к неопределённому поведению
         [[nodiscard]] pointer operator->() const noexcept {
+            //проверка, что адрес ненулевой, чтоб отлавливать выходы за пределы списка
+            assert(this->node_ != nullptr);  
             return &(this->node_->value);
         }
 
@@ -375,6 +383,9 @@ public:
      * Если при создании элемента будет выброшено исключение, список останется в прежнем состоянии
      */
     Iterator InsertAfter(ConstIterator pos, const Type& value) {
+        //проверка, что итератор указывает на вершину (ненулевой), чтоб отлавливать неверные итераторы
+        assert( pos.node_ != nullptr);  
+
         // создаем новый узел и в нем ссылаемся на следующий элемент 
         Node* ptr_new_node = new Node(value, pos.node_->next_node);
         
@@ -390,6 +401,11 @@ public:
     }
 
     void PopFront() noexcept {
+        // проверка списка на непустоту, чтобы удаление произошло корректно
+        if ((size_ == 0) || (head_.next_node == nullptr)) {
+            return;
+        }
+
         // сохраняем указатель на первый элемент, который надо удалить
         Node* ptr_to_delete = head_.next_node; 
         
@@ -410,6 +426,9 @@ public:
      * Возвращает итератор на элемент, следующий за удалённым
      */
     Iterator EraseAfter(ConstIterator pos) noexcept {
+        // проверяем, что итератор указывает на вершину (не nullptr),  чтобы отлавливать неверные итераторы
+        assert(pos.node_ != nullptr); 
+
         // указатель на удаляемый элемент:
         Node* ptr_to_delete = pos.node_->next_node;
 
@@ -481,5 +500,4 @@ bool operator>(const SingleLinkedList<Type>& lhs, const SingleLinkedList<Type>& 
 template <typename Type>
 bool operator>=(const SingleLinkedList<Type>& lhs, const SingleLinkedList<Type>& rhs) {
     return !(lhs < rhs);
-} 
-
+}
